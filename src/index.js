@@ -11,6 +11,14 @@ import Game from './components/Game.jsx';
 
 import { Shapes } from './constants';
 
+import WebFont from 'webfontloader';
+
+WebFont.load({
+    google: {
+        families: ['Roboto:100,300,400,500,700,900']
+    }
+});
+
 const store = applyMiddleware(thunk)(createStore)(reducers);
 
 render(

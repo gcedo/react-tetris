@@ -16,8 +16,8 @@ const Tetrimino = ({ shape, color, placement }) => {
     return (
         <div style={{
             position: placement ? 'absolute' : 'static',
-            top: placement.top * Dimensions.Square,
-            left: placement.left * Dimensions.Square
+            top: placement && placement.top * Dimensions.Square,
+            left: placement && placement.left * Dimensions.Square
         }}>
             {rows}
         </div>
@@ -26,10 +26,7 @@ const Tetrimino = ({ shape, color, placement }) => {
 
 Tetrimino.defaultProps = {
     shape: [[]],
-    placement: {
-        top: null,
-        left: null
-    }
+    placement: null
 };
 
 export default Tetrimino;

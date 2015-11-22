@@ -27,7 +27,6 @@ const Field = ({ children, matrix }) => {
             width: D.Square * D.Field.width,
             height: D.Square * D.Field.height,
             backgroundColor: C.Field.backgroundColor,
-            border: `1px solid ${C.Field.border}`,
             position: 'relative'
         }}>
             {squares}

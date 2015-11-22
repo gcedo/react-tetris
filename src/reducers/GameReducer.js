@@ -25,7 +25,10 @@ const initialState = {
             return undefined;
         }
     },
-    intervalId: null
+    intervalId: null,
+    score: 0,
+    rows: 0,
+    level: 0
 };
 
 function getTetriminoCells(state) {
@@ -40,20 +43,14 @@ function getTetriminoCells(state) {
     return cells;
 }
 
-function canMoveLeft(state, cells) {
-    const field = state.field;
-    return cells.every(cell => field.cellAt(cell.top, cell.left - 1) === null);
-}
-
-function canMoveRight(state, cells) {
-    const field = state.field;
-    return cells.every(cell => field.cellAt(cell.top, cell.left + 1) === null);
-}
-
-function canMoveDown(state, cells) {
-    const field = state.field;
-    return cells.every(cell => field.cellAt(cell.top + 1, cell.left) === null);
-}
+const canMove = {
+    Left: (state, cells) =>
+        cells.every(cell => state.field.cellAt(cell.top, cell.left - 1) === null),
+    Right:(state, cells) =>
+        cells.every(cell => state.field.cellAt(cell.top, cell.left + 1) === null),
+    Down:(state, cells) =>
+        cells.every(cell => state.field.cellAt(cell.top + 1, cell.left) === null)
+};
 
 function canRotate(state, cells) {
     return true;
@@ -82,7 +79,7 @@ function rotate(state, action) {
 
 function moveLeft(state, action) {
     const newState = clone(state);
-    if (canMoveLeft(state, getTetriminoCells(state))) {
+    if (canMove.Left(state, getTetriminoCells(state))) {
         newState.currentTetrimino.placement = {
             top: state.currentTetrimino.placement.top,
             left: state.currentTetrimino.placement.left - 1
@@ -93,7 +90,7 @@ function moveLeft(state, action) {
 
 function moveRight(state, action) {
     const newState = clone(state);
-    if (canMoveRight(state, getTetriminoCells(state))) {
+    if (canMove.Right(state, getTetriminoCells(state))) {
         newState.currentTetrimino.placement = {
             top: state.currentTetrimino.placement.top,
             left: state.currentTetrimino.placement.left + 1
@@ -104,7 +101,7 @@ function moveRight(state, action) {
 
 function moveDown(state, action) {
     let newState = clone(state);
-    if (canMoveDown(state, getTetriminoCells(state))) {
+    if (canMove.Down(state, getTetriminoCells(state))) {
         newState.currentTetrimino.placement = {
             top: state.currentTetrimino.placement.top + 1,
             left: state.currentTetrimino.placement.left
@@ -136,16 +133,15 @@ function updateScore(state) {
     const newState = clone(state);
     let matrix  =
         newState.field.matrix.filter(row => row.some(cell => cell === null));
+    newState.field.matrix = matrix;
     const nOfDeletedRows = Dimensions.Field.height - matrix.length;
+    newState.score += 40 * (newState.level + 1) * nOfDeletedRows;
+    newState.rows += nOfDeletedRows;
     Array.prototype.unshift.apply(
         matrix,
-        times(
-            nOfDeletedRows,
-            () => times(Dimensions.Field.width, () => null)
-        )
+        times(nOfDeletedRows, () => times(Dimensions.Field.width, () => null))
     );
 
-    newState.field.matrix = matrix;
     return newState;
 }
 

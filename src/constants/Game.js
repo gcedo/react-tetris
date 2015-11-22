@@ -3,7 +3,11 @@ export const Dimensions = {
         width: 10,
         height: 20
     },
-    Square: 15
+    Square: 15,
+    NextTetrimino: {
+        width: 6,
+        height: 2
+    }
 };
 
 export const ActionTypes = {

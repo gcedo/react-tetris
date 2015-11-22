@@ -1,7 +1,7 @@
 export const Colors = {
     Field: {
         backgroundColor: '#1b2b34',
-        border: 'black'
+        border: '#1b2b34'
     },
 
     Tetriminos: [
