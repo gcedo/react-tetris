@@ -1,11 +1,12 @@
 import React, { PropTypes as T } from 'react';
+import { Dimensions } from '../../constants';
 
 const Square = ({ color })  => {
     return (
         <div style={{
             backgroundColor: color,
-            width: 15,
-            height: 15,
+            width: Dimensions.Square,
+            height: Dimensions.Square,
         }}/>
     );
 };
