@@ -24,6 +24,15 @@ export function moveDown() {
     };
 }
 
+export function newTetrimino() {
+    return (dispatch, getState) => {
+        const intervalId = setInterval(() => {
+            dispatch(moveDown());
+        }, 1000 / (getState().game.level + 1));
+        dispatch({ type: ActionTypes.NEW_TETRIMINO, payload: { intervalId } });
+    };
+}
+
 export function startGame() {
     return (dispatch, getState) => {
         console.log('> Game starting...');
@@ -39,5 +48,6 @@ export default {
     moveLeft,
     moveRight,
     startGame,
-    moveDown
+    moveDown,
+    newTetrimino
 };

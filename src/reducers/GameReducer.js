@@ -8,12 +8,12 @@ const initialState = {
     currentTetrimino: {
         shape: Shapes[first(shuffle(Object.keys(Shapes)))],
         color: first(shuffle(Colors.Tetriminos)),
-        placement: { top: 1, left: 4 }
+        placement: { top: 0, left: 4 }
     },
     nextTetrimino: {
         shape: Shapes[first(shuffle(Object.keys(Shapes)))],
         color: first(shuffle(Colors.Tetriminos)),
-        placement: { top: 1, left: 4 }
+        placement: { top: 0, left: 4 }
     },
     field: {
         matrix: times(
@@ -28,7 +28,8 @@ const initialState = {
     intervalId: null,
     score: 0,
     rows: 0,
-    level: 0
+    level: 0,
+    newTetrimino: false
 };
 
 function getTetriminoCells(state) {
@@ -54,19 +55,6 @@ const canMove = {
 
 function canRotate(state, cells) {
     return true;
-}
-
-function startGame(state, action) {
-    const newState = clone(state);
-    newState.currentTetrimino = state.nextTetrimino;
-    newState.nextTetrimino = {
-        shape: Shapes[first(shuffle(Object.keys(Shapes)))],
-        color: first(shuffle(Colors.Tetriminos)),
-        placement: { top: 1, left: 4 }
-    };
-    newState.intervalId = action.payload.intervalId;
-    console.log('> Game started.', newState);
-    return newState;
 }
 
 function rotate(state, action) {
@@ -99,27 +87,6 @@ function moveRight(state, action) {
     return newState;
 }
 
-function moveDown(state, action) {
-    let newState = clone(state);
-    if (canMove.Down(state, getTetriminoCells(state))) {
-        newState.currentTetrimino.placement = {
-            top: state.currentTetrimino.placement.top + 1,
-            left: state.currentTetrimino.placement.left
-        };
-    } else {
-        clearInterval(newState.intervalId);
-        newState = addTetriminoToField(newState);
-        newState = updateScore(newState);
-        newState.currentTetrimino = newState.nextTetrimino;
-        newState.nextTetrimino = {
-            shape: Shapes[first(shuffle(Object.keys(Shapes)))],
-            color: first(shuffle(Colors.Tetriminos)),
-            placement: { top: 1, left: 4 }
-        };
-    }
-    return newState;
-}
-
 function addTetriminoToField(state) {
     const newState = clone(state);
     const cells = getTetriminoCells(newState);
@@ -137,11 +104,47 @@ function updateScore(state) {
     const nOfDeletedRows = Dimensions.Field.height - matrix.length;
     newState.score += 40 * (newState.level + 1) * nOfDeletedRows;
     newState.rows += nOfDeletedRows;
+    newState.level = Math.floor(newState.rows / 10);
     Array.prototype.unshift.apply(
         matrix,
         times(nOfDeletedRows, () => times(Dimensions.Field.width, () => null))
     );
+    return newState;
+}
 
+function moveDown(state, action) {
+    let newState = clone(state);
+    if (canMove.Down(state, getTetriminoCells(state))) {
+        newState.currentTetrimino.placement = {
+            top: state.currentTetrimino.placement.top + 1,
+            left: state.currentTetrimino.placement.left
+        };
+    } else {
+        clearInterval(newState.intervalId);
+        newState = addTetriminoToField(newState);
+        newState = updateScore(newState);
+        newState.currentTetrimino = newState.nextTetrimino;
+        newState.nextTetrimino = {
+            shape: Shapes[first(shuffle(Object.keys(Shapes)))],
+            color: first(shuffle(Colors.Tetriminos)),
+            placement: { top: 1, left: 4 }
+        };
+        newState.newTetrimino = true;
+    }
+    return newState;
+}
+
+function newTetrimino(state, action) {
+    const newState = clone(state);
+    newState.newTetrimino = false;
+    newState.intervalId = action.payload.intervalId;
+    return newState;
+}
+
+function startGame(state, action) {
+    const newState = clone(state);
+    newState.intervalId = action.payload.intervalId;
+    console.log('> Game started.', newState);
     return newState;
 }
 
@@ -158,6 +161,8 @@ export default function game(state = initialState, action) {
         return moveRight(state, action);
     case ActionTypes.MOVE_DOWN:
         return moveDown(state, action);
+    case ActionTypes.NEW_TETRIMINO:
+        return newTetrimino(state, action);
     }
     return state;
 }

@@ -16,7 +16,8 @@ export const ActionTypes = {
     MOVE_RIGHT: 'MOVE_RIGHT',
     START_GAME: 'START_GAME',
     MOVE_DOWN: 'MOVE_DOWN',
-    GAME_STARTED: 'GAME_STARTED'
+    GAME_STARTED: 'GAME_STARTED',
+    NEW_TETRIMINO: 'NEW_TETRIMINO'
 };
 
 export const KeyCodes = {
@@ -30,12 +31,12 @@ export const KeyCodes = {
 export const Shapes = {
     I: [[1, 1, 1, 1]],
     J: [
-        [1, 1, 1],
-        [0, 0, 1]
+        [1, 0, 0],
+        [1, 1, 1]
     ],
     L: [
-        [1, 1, 1],
-        [1, 0, 0]
+        [0, 0, 1],
+        [1, 1, 1]
     ],
     O: [
         [1, 1],
@@ -46,8 +47,8 @@ export const Shapes = {
         [1, 1, 0]
     ],
     T: [
-        [1, 1, 1],
-        [0, 1, 0]
+        [0, 1, 0],
+        [1, 1, 1]
     ],
     Z: [
         [1, 1, 0],
