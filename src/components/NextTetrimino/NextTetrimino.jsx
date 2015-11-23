@@ -10,7 +10,7 @@ const NextTetrimino = ({ tetrimino }) => {
             <Flex
                 justifyContent="center"
                 alignItems="center"
-                padding="5px 0 15px 0"
+                padding="5px 0 32px 0"
                 width={Dimensions.NextTetrimino.width * Dimensions.Square}
                 height={Dimensions.NextTetrimino.height * Dimensions.Square}
             >

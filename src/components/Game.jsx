@@ -16,21 +16,35 @@ export default class Game extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { message: 's to start' };
+    this.state = {
+      message: 's to start',
+      showMessage: true,
+      hasFocus: false
+    };
+  }
+
+  handleOnFocus = (event) => {
+    this.setState({ hasFocus: true });
+  }
+
+  handleOnFClickOutside = (event) => {
+    console.log('click');
+    this.setState({ hasFocus: false });
   }
 
   componentDidMount() {
+    window.addEventListener('mousedown', this.handleOnFClickOutside, false);
     this.refs.main.focus();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.game.newTetrimino && !prevProps.game.newTetrimino) {
-      this.props.dispatch(ActionCreators.newTetrimino());
+    const { game, dispatch } = this.props;
+    if (game.newTetrimino && !prevProps.game.newTetrimino) {
+      dispatch(ActionCreators.newTetrimino());
     }
 
-    if (this.props.game.level > prevProps.game.level) {
-      this.setState({ message: `level ${this.props.game.level}`});
-    }
+    if (game.lose && !prevProps.game.lose)
+      this.setState({ message: 'you lose', showMessage: true });
   }
 
   handleKeyDown = (event) => {
@@ -46,7 +60,10 @@ export default class Game extends Component {
     case KeyCodes.DOWN_ARROW:
       return dispatch(ActionCreators.moveDown());
     case KeyCodes.S:
-      return dispatch(ActionCreators.startGame());
+      return this.setState(
+        { showMessage: false},
+        () => dispatch(ActionCreators.startGame())
+      );
     }
   }
 
@@ -57,14 +74,19 @@ export default class Game extends Component {
     return (
       <div
         onKeyDown={this.handleKeyDown}
+        onFocus={this.handleOnFocus}
         tabIndex="1"
         ref="main"
-        style={{display: 'flex', outline: 'unset'}}
+        style={{
+          display: 'flex',
+          outline: 'unset',
+          opacity: this.state.hasFocus ? 1 : .6
+        }}
       >
-        <Col>
+        <Col opacity={game.lose ? .6 : 1}>
           <Field matrix={game.field.matrix}>
               {currentTetrimino}
-              <Modal message={this.state.message} />
+              <Modal message={this.state.message} show={this.state.showMessage} />
           </Field>
         </Col>
         <Col>

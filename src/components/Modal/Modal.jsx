@@ -1,11 +1,11 @@
 import React from 'react';
 import { Flex, Block } from 'jsxstyle';
 
-const Modal = ({ message }) => {
+const Modal = ({ message, show }) => {
     return (
         <Flex
-            opacity={message ? 1 : 0}
-            transition="all 2s"
+            opacity={show ? 1 : 0}
+            transition="all 1s"
             height="60"
             width="100%"
             position="absolute"

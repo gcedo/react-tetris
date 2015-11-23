@@ -1,7 +1,7 @@
 export const Dimensions = {
     Field: {
         width: 10,
-        height: 20
+        height: 22
     },
     Square: 15,
     NextTetrimino: {

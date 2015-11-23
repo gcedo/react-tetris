@@ -29,7 +29,8 @@ const initialState = {
     score: 0,
     rows: 0,
     level: 0,
-    newTetrimino: false
+    newTetrimino: false,
+    lose: false
 };
 
 function getTetriminoCells(state) {
@@ -119,6 +120,9 @@ function moveDown(state, action) {
             top: state.currentTetrimino.placement.top + 1,
             left: state.currentTetrimino.placement.left
         };
+    } else if (newState.currentTetrimino.placement.top === 0) {
+        clearInterval(newState.intervalId);
+        newState.lose = true;
     } else {
         clearInterval(newState.intervalId);
         newState = addTetriminoToField(newState);
@@ -127,7 +131,7 @@ function moveDown(state, action) {
         newState.nextTetrimino = {
             shape: Shapes[first(shuffle(Object.keys(Shapes)))],
             color: first(shuffle(Colors.Tetriminos)),
-            placement: { top: 1, left: 4 }
+            placement: { top: 0, left: 4 }
         };
         newState.newTetrimino = true;
     }

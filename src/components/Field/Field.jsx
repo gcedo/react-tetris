@@ -1,6 +1,7 @@
 import React from 'react';
 import Square from '../Tetriminos/Square.jsx';
 import { Dimensions as D, Colors as C } from '../../constants';
+import { Block } from 'jsxstyle';
 
 const Field = ({ children, matrix }) => {
     const squares = [];
@@ -28,7 +29,8 @@ const Field = ({ children, matrix }) => {
             height: D.Square * D.Field.height,
             backgroundColor: C.Field.backgroundColor,
             position: 'relative'
-        }}>
+        }}
+        >
             {squares}
             {children}
         </div>
