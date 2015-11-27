@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import Field from './Field/Field.jsx';
 import Tetrimino from './Tetriminos/Tetrimino.jsx';
@@ -23,17 +24,17 @@ export default class Game extends Component {
     };
   }
 
-  handleOnFocus = (event) => {
+  handleOnFocus = event => {
     this.setState({ hasFocus: true });
   }
 
-  handleOnFClickOutside = (event) => {
-    console.log('click');
+  handleOnClickOutside = event => {
+    if (findDOMNode(this).contains(event.target)) return;
     this.setState({ hasFocus: false });
   }
 
   componentDidMount() {
-    window.addEventListener('mousedown', this.handleOnFClickOutside, false);
+    window.addEventListener('click', this.handleOnClickOutside, false);
     this.refs.main.focus();
   }
 
@@ -80,7 +81,8 @@ export default class Game extends Component {
         style={{
           display: 'flex',
           outline: 'unset',
-          opacity: this.state.hasFocus ? 1 : .6
+          opacity: this.state.hasFocus ? 1 : .6,
+          width: 260
         }}
       >
         <Col opacity={game.lose ? .6 : 1}>
