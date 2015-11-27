@@ -4,7 +4,7 @@ import { first, shuffle } from 'lodash';
 import { clone, times } from 'lodash';
 import r from '../lib/rotate.js';
 
-const initialState = {
+const getInitialState = () => ({
     currentTetrimino: {
         shape: Shapes[first(shuffle(Object.keys(Shapes)))],
         color: first(shuffle(Colors.Tetriminos)),
@@ -31,7 +31,7 @@ const initialState = {
     level: 0,
     newTetrimino: false,
     lose: false
-};
+});
 
 function getTetriminoCells(state) {
     const t = state.currentTetrimino.shape;
@@ -114,6 +114,7 @@ function updateScore(state) {
 }
 
 function moveDown(state, action) {
+    console.log('move down');
     let newState = clone(state);
     if (canMove.Down(state, getTetriminoCells(state))) {
         newState.currentTetrimino.placement = {
@@ -122,9 +123,9 @@ function moveDown(state, action) {
         };
     } else if (newState.currentTetrimino.placement.top === 0) {
         clearInterval(newState.intervalId);
+        newState.newTetrimino = false;
         newState.lose = true;
     } else {
-        clearInterval(newState.intervalId);
         newState = addTetriminoToField(newState);
         newState = updateScore(newState);
         newState.currentTetrimino = newState.nextTetrimino;
@@ -140,19 +141,21 @@ function moveDown(state, action) {
 
 function newTetrimino(state, action) {
     const newState = clone(state);
+    clearInterval(newState.intervalId);
     newState.newTetrimino = false;
     newState.intervalId = action.payload.intervalId;
     return newState;
 }
 
 function startGame(state, action) {
-    const newState = clone(state);
+    clearInterval(state.intervalId);
+    const newState = getInitialState();
     newState.intervalId = action.payload.intervalId;
     console.log('> Game started.', newState);
     return newState;
 }
 
-export default function game(state = initialState, action) {
+export default function game(state = getInitialState(), action) {
     let newState;
     switch (action.type) {
     case ActionTypes.START_GAME:
