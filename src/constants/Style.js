@@ -6,7 +6,7 @@ export const Colors = {
 
     Tetriminos: [
         '#EC5f67',
-        '#FAC863',
+        '#99C794',
         '#C594C5',
         '#6699CC',
         '#5FB3B3',

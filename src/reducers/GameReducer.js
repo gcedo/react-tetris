@@ -1,37 +1,44 @@
 import { ActionTypes } from '../constants';
 import { Shapes, Dimensions, Colors } from '../constants';
-import { first, shuffle } from 'lodash';
+import { first, shuffle, zip, rest } from 'lodash';
 import { clone, times } from 'lodash';
 import r from '../lib/rotate.js';
 
-const getInitialState = () => ({
-    currentTetrimino: {
-        shape: Shapes[first(shuffle(Object.keys(Shapes)))],
-        color: first(shuffle(Colors.Tetriminos)),
+const getPermutation = () => {
+    const tetriminos = shuffle(Object.keys(Shapes)).map(key => Shapes[key]);
+    const colors = shuffle(Colors.Tetriminos);
+    return zip(tetriminos, colors).map(tuple => ({
+        shape: tuple[0],
+        color: tuple[1],
         placement: { top: 0, left: 4 }
-    },
-    nextTetrimino: {
-        shape: Shapes[first(shuffle(Object.keys(Shapes)))],
-        color: first(shuffle(Colors.Tetriminos)),
-        placement: { top: 0, left: 4 }
-    },
-    field: {
-        matrix: times(
-            Dimensions.Field.height,
-            () => times(Dimensions.Field.width, () => null)
-        ),
-        cellAt: function(top, left) {
-            if (this.matrix[top] !== undefined) return this.matrix[top][left];
-            return undefined;
-        }
-    },
-    intervalId: null,
-    score: 0,
-    rows: 0,
-    level: 0,
-    newTetrimino: false,
-    lose: false
-});
+    }));
+};
+
+const getInitialState = () => {
+    const permutation = getPermutation();
+    const currentTetrimino = permutation.shift();
+    return {
+        currentTetrimino,
+        permutation,
+        nextTetrimino: first(permutation),
+        field: {
+            matrix: times(
+                Dimensions.Field.height,
+                () => times(Dimensions.Field.width, () => null)
+            ),
+            cellAt: function(top, left) {
+                if (this.matrix[top] !== undefined) return this.matrix[top][left];
+                return undefined;
+            }
+        },
+        intervalId: null,
+        score: 0,
+        rows: 0,
+        level: 0,
+        newTetrimino: false,
+        lose: false
+    };
+};
 
 function getTetriminoCells(state) {
     const t = state.currentTetrimino.shape;
@@ -128,12 +135,12 @@ function moveDown(state, action) {
     } else {
         newState = addTetriminoToField(newState);
         newState = updateScore(newState);
+        if (newState.permutation.length === 1) {
+            newState.permutation = getPermutation();
+        }
         newState.currentTetrimino = newState.nextTetrimino;
-        newState.nextTetrimino = {
-            shape: Shapes[first(shuffle(Object.keys(Shapes)))],
-            color: first(shuffle(Colors.Tetriminos)),
-            placement: { top: 0, left: 4 }
-        };
+        newState.permutation = rest(newState.permutation);
+        newState.nextTetrimino = first(newState.permutation);
         newState.newTetrimino = true;
     }
     return newState;
@@ -149,7 +156,7 @@ function newTetrimino(state, action) {
 
 function startGame(state, action) {
     clearInterval(state.intervalId);
-    const newState = getInitialState();
+    const newState = state.lose ? getInitialState() : clone(state);
     newState.intervalId = action.payload.intervalId;
     console.log('> Game started.', newState);
     return newState;

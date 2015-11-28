@@ -48,9 +48,10 @@ export default class Game extends Component {
       this.setState({ message: 'you lose', showMessage: true });
   }
 
-  handleKeyDown = (event) => {
-    const { dispatch } = this.props;
+  handleKeyDown = event => {
+    const { dispatch, game } = this.props;
     event.preventDefault();
+
     switch (event.keyCode) {
     case KeyCodes.SPACE_BAR:
       return dispatch(ActionCreators.rotate());
