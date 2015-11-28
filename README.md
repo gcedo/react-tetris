@@ -1,5 +1,5 @@
 # react-tetris
-React &amp; Redux implementation of the famous Tetris game.
+React &amp; Redux implementation of the famous Tetris game. [Play with the demo!](http://gcedo.github.io/react-tetris/)
 
 ![Demo](demo.gif)
 
